@@ -126,6 +126,11 @@ fn start() -> Result<(), Box<dyn Error>> {
             (@arg show: --show -s "Show the item once created")
             (@arg name: +takes_value --name -n "Specify the name of the object being created without a prompt")
         )
+        (@subcommand move =>
+            (about: "Move objects")
+            (@arg source_pattern: +required "':' separated source pattern")
+            (@arg target_pattern: +required "':' separated target pattern")
+        )
     )
     .get_matches();
 
@@ -176,6 +181,8 @@ fn start() -> Result<(), Box<dyn Error>> {
         subcommands::open_subcommand(&client, &matches)?;
     } else if let Some(matches) = matches.subcommand_matches("create") {
         subcommands::create_subcommand(&client, &matches)?;
+    } else if let Some(matches) = matches.subcommand_matches("move") {
+        subcommands::move_subcommand(&client, &matches)?;
     } else {
         println!("{}", matches.usage());
     }

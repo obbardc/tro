@@ -6,6 +6,45 @@ use trello::{search, Attachment, Board, Card, Client, Label, List, Renderable};
 
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
+pub fn move_subcommand(client: &Client, matches: &ArgMatches) -> Result<()> {
+    debug!("Running move subcommand with {:?}", matches);
+
+    let mut source_pattern = matches
+        .value_of("source_pattern")
+        .ok_or("source required")?
+        .split(":");
+
+    let mut target_pattern = matches
+        .value_of("target_pattern")
+        .ok_or("target required")?
+        .split(":");
+
+    let source_params = find::TrelloParams {
+        board_name: source_pattern.next(),
+        list_name: source_pattern.next(),
+        card_name: source_pattern.next(),
+        ignore_case: true,
+    };
+
+    let target_params = find::TrelloParams {
+        board_name: target_pattern.next(),
+        list_name: target_pattern.next(),
+        card_name: None,
+        ignore_case: true,
+    };
+
+    println!("source_params: {:?}", source_params);
+    println!("target_params: {:?}", target_params);
+
+    let source_result = find::get_trello_object(client, &source_params)?;
+    let target_result = find::get_trello_object(client, &target_params)?;
+
+    println!("source_result: {:?}", source_result);
+    println!("target_result: {:?}", target_result);
+
+    Ok(())
+}
+
 pub fn show_subcommand(client: &Client, matches: &ArgMatches) -> Result<()> {
     debug!("Running show subcommand with {:?}", matches);
 
